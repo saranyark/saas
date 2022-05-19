@@ -6,6 +6,9 @@ class Tenant < ApplicationRecord
     def self.create_new_tenant(tenant_params, user_params, coupon_params)
 
       tenant = Tenant.new(:name => tenant_params[:name])
+      validates_presence_of :name
+
+      validates_uniqueness_of :name
 
       if new_signups_not_permitted?(coupon_params)
 
