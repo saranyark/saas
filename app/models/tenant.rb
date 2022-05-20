@@ -2,15 +2,14 @@ class Tenant < ApplicationRecord
 
    acts_as_universal_and_determines_tenant
   has_many :members, dependent: :destroy
+  
+  
 
     def self.create_new_tenant(tenant_params, user_params, coupon_params)
 
-      tenant = Tenant.new(:name => tenant_params[:name])
-      validates_presence_of :name
+      tenant = Tenant.new(tenant_params)
 
-      validates_uniqueness_of :name
-
-      if new_signups_not_permitted?(coupon_params)
+       if new_signups_not_permitted?(coupon_params)
 
         raise ::Milia::Control::MaxTenantExceeded, "Sorry, new accounts not permitted at this time" 
 
@@ -28,7 +27,6 @@ class Tenant < ApplicationRecord
   def self.new_signups_not_permitted?(params)
     return false
   end
-
   # ------------------------------------------------------------------------
   # tenant_signup -- setup a new tenant in the system
   # CALLBACK from devise RegistrationsController (milia override)
@@ -38,7 +36,7 @@ class Tenant < ApplicationRecord
   #   tenant -- new tenant obj
   #   other  -- any other parameter string from initial request
   # ------------------------------------------------------------------------
-    def self.tenant_signup(user, tenant, other = nil)
+     def self.tenant_signup(user, tenant, other = nil)
       #  StartupJob.queue_startup( tenant, user, other )
       # any special seeding required for a new organizational tenant
       #

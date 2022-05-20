@@ -1,6 +1,6 @@
 class ConfirmationsController < Milia::ConfirmationsController
 
-	def update
+  def update
     if @confirmable.attempt_set_password(user_params)
 
       # this section is patterned off of devise 3.2.5 confirmations_controller#show
@@ -27,62 +27,63 @@ class ConfirmationsController < Milia::ConfirmationsController
   end
 
 
-def show
+  def show
 
-if @confirmable.new_record? ||
+    if @confirmable.new_record? ||
+      !::Milia.use_invite_member ||
+      @confirmable.skip_confirm_change_password
 
-!::Milia.use_invite_member ||
 
-@confirmable.skip_confirm_change_password
+      log_action( "devise pass-thru" )
+      self.resource = resource_class.confirm_by_token(params[:confirmation_token])
+      yield resource if block_given?
+      if resource.errors.empty?
+        set_flash_message(:notice, :confirmed) if is_flashing_format?
+      end
 
-log_action( "devise pass-thru" )
+      if @confirmable.skip_confirm_change_password
+        sign_in_tenanted_and_redirect(resource)
+      end
 
-self.resource = resource_class.confirm_by_token(params[:confirmation_token])
+    else
+    log_action( "password set form" )
+    flash[:notice] = "Please choose a password and confirm it"
+    prep_do_show() # prep for the form
+    end
+  end
 
-yield resource if block_given?
 
-if resource.errors.empty?
+  def after_confirmation_path_for(resource_name, resource)
+    if user_signed_in?
+      root_path
+    else
+      new_user_session_path
+    end
+  end
 
-set_flash_message(:notice, :confirmed) if is_flashing_format?
+  # def show
+  #   if @confirmable.new_record?  ||
+  #      !::Milia.use_invite_member ||
+  #      @confirmable.skip_confirm_change_password
 
-end
-
-if @confirmable.skip_confirm_change_password
-
-sign_in_tenanted_and_redirect(resource)
-
-end
-
-else
-
-log_action( "password set form" )
-
-flash[:notice] = "Please choose a password and confirm it"
-
-prep_do_show() # prep for the form
-
-end
-
-# else fall thru to show template which is form to set a password
-
-# upon SUBMIT, processing will continue from update
-
-end
+  #     log_action( "devise pass-thru" )
+  #     super  # this will redirect
+  #     if @confirmable.skip_confirm_change_password
+  #       sign_in_tenanted(resource)
+  #     end
+  #   else
+  #     log_action( "password set form" )
+  #     prep_do_show()  # prep for the form
+  #   end
+  #   # else fall thru to show template which is form to set a password
+  #   # upon SUBMIT, processing will continue from update
+  # end
 
 private
 
 def set_confirmable()
-
-@confirmable = User.find_or_initialize_with_error_by(:confirmation_token,
-
-params[:confirmation_token])
-
+  @confirmable = User.find_or_initialize_with_error_by(:confirmation_token,
+  params[:confirmation_token])
 end
 
-def after_confirmation_path_for(resource_name, resource)
-	if user_signed_in?
-		root_path
-    else
-    	new_user_session_path
-    end
 end
