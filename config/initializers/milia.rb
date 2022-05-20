@@ -7,7 +7,7 @@ Milia.setup do |config|
 # false to otherwise not expect a coupon attribute in the parameters
   config.use_coupon = false
 
-# true if you use recaptcha on your sign-up form;
+# true if you use recaptcha on your sign-up form; 
   # be sure to include the gem 'recaptcha' in your Gemfile
 # false if you do not
   config.use_recaptcha = false
@@ -20,7 +20,7 @@ Milia.setup do |config|
   # be sure to include the gem 'airbrake' in your Gemfile
 # false if you do not
 # In certain situations, milia will notify airbrake of a situation which
-  # is not necessarily an exception: such as if someone attempts to
+  # is not necessarily an exception: such as if someone attempts to 
   # sign up but you're limited new sign ups (such as when in beta mode)
   # then you'll get notified via airbrake of the email of the person
   # attempting the signup (in case you wish to contact them)
@@ -30,11 +30,17 @@ Milia.setup do |config|
 # ASSUMES User model
   config.use_invite_member = true
 
+  # whitelist user params list
+  # allows an app to expand the permitted attribute list
+  # specify each attribute as a symbol
+  # example: [:name]
+  # config.whitelist_user_params = []
+
   # whitelist tenant params list
   # allows an app to expand the permitted attribute list
   # specify each attribute as a symbol
   # example: [:name]
-  config.whitelist_tenant_params = [:plan]
+  config.whitelist_tenant_params = [:plan, :token]
 
   # whitelist coupon params list
   # allows an app to expand the permitted attribute list

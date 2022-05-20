@@ -10,10 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_19_085208) do
+ActiveRecord::Schema.define(version: 2022_05_20_113002) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "artifacts", force: :cascade do |t|
+    t.string "name"
+    t.string "key"
+    t.bigint "project_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_artifacts_on_project_id"
+  end
 
   create_table "members", force: :cascade do |t|
     t.bigint "tenant_id"
@@ -24,6 +33,25 @@ ActiveRecord::Schema.define(version: 2022_05_19_085208) do
     t.datetime "updated_at", null: false
     t.index ["tenant_id"], name: "index_members_on_tenant_id"
     t.index ["user_id"], name: "index_members_on_user_id"
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.string "email"
+    t.string "token"
+    t.bigint "tenant_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id"], name: "index_payments_on_tenant_id"
+  end
+
+  create_table "projects", force: :cascade do |t|
+    t.string "title"
+    t.string "details"
+    t.date "expected_completion_date"
+    t.bigint "tenant_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id"], name: "index_projects_on_tenant_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -65,13 +93,17 @@ ActiveRecord::Schema.define(version: 2022_05_19_085208) do
     t.bigint "tenant_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_admin", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["tenant_id"], name: "index_users_on_tenant_id"
   end
 
+  add_foreign_key "artifacts", "projects"
   add_foreign_key "members", "tenants"
   add_foreign_key "members", "users"
+  add_foreign_key "payments", "tenants"
+  add_foreign_key "projects", "tenants"
   add_foreign_key "tenants", "tenants"
 end

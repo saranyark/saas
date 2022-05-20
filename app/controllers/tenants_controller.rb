@@ -30,7 +30,7 @@ class TenantsController < ApplicationController
         end
       end
     end
-  end
+end
   
   def change
     @tenant = Tenant.find(params[:id])
