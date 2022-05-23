@@ -49,4 +49,4 @@ end
     params.require(:tenant).permit(:name, :plan)
   end
 end
-end
+

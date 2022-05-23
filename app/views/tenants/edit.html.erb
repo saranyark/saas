@@ -1,5 +1,5 @@
-<script language="JavaScript">
-  Stripe.setPublishableKey("<%= ENV['STRIPE_TEST_PUBLISHABLE_KEY'] %>");
+<script language="Javascript">
+  Stripe.setPublishableKey("<%= Rails.application.credentials.stripe[:publishable_key] %>");
 </script>
 <%= form_for @tenant, url: update_plan_path, html: { class: "#{class_name_for_tenant_form(@tenant)}" } do |f| %>
   <div class="form-group col-md-12 no-side-padding">
